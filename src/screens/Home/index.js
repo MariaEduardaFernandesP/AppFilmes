@@ -1,18 +1,44 @@
-
 import { StyleSheet, Text, View ,FlatList} from 'react-native';
 import BannerMovies from '../../components/bannerFilmes';
 import CardMovies from '../../components/cardMovies';
 import Header from '../../components/header';
 import SearchBar from '../../components/searchbar';
 import Filmes from '../../data/movies'
-
+import {useState, useEffect} from 'react';
+ 
+ 
 export default function App() {
+ 
+  const [movies,setFilmes] = useState();
+ 
+  useEffect(()=>{
+ 
+  async function buscarFilmes(){
+ 
+    try{
+    const response = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=51380eb0e09a095f4863e6ced390d598&language=pt-br&page=1')
+    const data = await response.json();
+    console.log(data.results)
+    setFilmes(data.results)
+    }
+    catch (error){
+      console.log("Erro ao buscar filmes ", error)
+ 
+    }
+    }
+    buscarFilmes();
+ 
+},[])
+ 
+ 
+ 
+ 
   return (
     <View style={styles.container}>
      <Header></Header>
-
+ 
      <SearchBar></SearchBar>
-
+ 
      <BannerMovies></BannerMovies>
      
     
@@ -20,26 +46,26 @@ export default function App() {
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={Filmes}
+            data={movies}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               
               <CardMovies
-                titulo={item.nome}
-                imagem={item.imagem}
-                nota={item.nota}
+                titulo={item.title}
+                imagem={item.poster_path}
+                nota={item.vote_avereage}
               />
             )}
           />
         </View>
     
   
-
+ 
     </View>
-
+ 
   );
 }
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex:1,
